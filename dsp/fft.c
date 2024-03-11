@@ -1,51 +1,31 @@
 #include <complex.h>
 #include <math.h>
-#include <stdio.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <stdint.h>
 
-void print_complex(complex double z) {
-        printf("%f+%f*i\n", creal(z), cimag(z));
-}
-
-void print_complex_arr(complex double *z, size_t len) {
-        for (int i = 0; i < len; i++) {
-          print_complex(z[i]);
-        }
-}
-
-void complex_arithmetic(void) {
-        complex double a = 1.0 + 2.0 * I;
-        complex double b = 2.0 + 3.0 * I;
-
-        print_complex(a + b);
-        print_complex(a - b);
-        print_complex(a * b);
-        print_complex(a / b);
-}
-
 void dft(complex double *x, complex double *X, size_t len) {
-        int N = len;
-        for (int k = 0; k < len; k++) {
-          for (int n = 0; n < len; n++) {
-            X[k] += x[n] * cexp(-1 * ((I * 2 * M_PI) / N) * k * n);
-          }
-        }
+  int N = len;
+  for (int k = 0; k < len; k++) {
+    for (int n = 0; n < len; n++) {
+      X[k] += x[n] * cexp(-1 * ((I * 2 * M_PI) / N) * k * n);
+    }
+  }
 }
 
 static int get_even(complex double *x, size_t len, complex double **even) {
-        size_t N = (len / 2) + (len % 2);
+  size_t N = (len / 2) + (len % 2);
 
-        *even = malloc(N * sizeof(complex double));
-        if (*even == NULL) {
-                return -1;
-        }
+  *even = malloc(N * sizeof(complex double));
+  if (*even == NULL) {
+    return -1;
+  }
 
-        for (int i = 0; i < N; i++) {
-          (*even)[i] = x[i * 2];
-        }
+  for (int i = 0; i < N; i++) {
+    (*even)[i] = x[i * 2];
+  }
 
-        return 0;
+  return 0;
 }
 
 static int get_odd(complex double *x, size_t len, complex double **odd) {
@@ -139,29 +119,6 @@ cleanup:
         return ret;
 }
 
-
-static void tostring_binary(uint32_t a, char **bin)
-{
-        const size_t n = sizeof(a) * 8;
-        *bin= malloc(sizeof(char) * (n+1));
-        uint32_t mask = 1 << (n-1);
-        for (int i = 0; i < n; i++) {
-                (*bin)[i] = (a & mask) ? '1' : '0';
-                mask = mask >> 1;
-        }
-
-        (*bin)[n] = '\0';
-}
-
-
-static void print_bits(uint32_t a)
-{
-    char *bin = NULL;
-    tostring_binary(a, &bin);
-    printf("%s\n", bin);
-    free(bin);
-}
-
 static uint32_t rev(const uint32_t a, size_t len) {
         uint32_t num_of_bits = log2(len);
         uint32_t mask = 1 << (num_of_bits-1);
@@ -209,61 +166,6 @@ int iterative_fft(const complex double *const x, complex double *X,
                 }
       }
   }
-
-  return 0;
-}
-
-int main(void) {
-  const int num_samples = 8;
-
-  complex double x[num_samples];
-  complex double X_dft[num_samples];
-  complex double *X_fft;
-
-  complex double X_iter_fft[num_samples];
-
-  double _Complex foo = 1.0 + 2.0 * I;
-  // print_complex(foo);
-
-  /* complex_arithmetic(); */
-
-  for (int i = 0; i < num_samples; i++) {
-    x[i] = 1.0 * i + 1.0 * i * I;
-  }
-
-  /* print_complex_arr(x, num_samples); */
-  /* printf("-----------\n"); */
-
-  /* complex double *even = get_even(x, num_samples); */
-  /* print_complex_arr(even, (num_samples / 2) + 1); */
-
-  /* printf("-----------\n"); */
-
-  /* complex double *odd = get_odd(x, num_samples); */
-  /* print_complex_arr(odd, num_samples / 2); */
-
-  /* complex double *factor = get_factor(10); */
-  /* print_complex_arr(factor, 10); */
-
-  /* printf("-----------\n"); */
-
-  /* dft(x, X_dft, num_samples); */
-  /* print_complex_arr(X_dft, num_samples); */
-
-  /* printf("-----------\n"); */
-
-  fft(x, num_samples, &X_fft);
-  print_complex_arr(X_fft, num_samples);
-  free(X_fft);
-
-  printf("-----------\n");
-
-  /* print_complex_arr(x, num_samples); */
-  /* printf("----------\n"); */
-  /* bit_reverse_copy(x, X_iter_fft, num_samples); */
-  iterative_fft(x, X_iter_fft, num_samples);
-  print_complex_arr(X_iter_fft, num_samples);
-
 
   return 0;
 }
