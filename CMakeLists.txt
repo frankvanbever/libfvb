@@ -10,12 +10,13 @@ project(
 option(CMAKE_BUILD_TYPE release)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-file(GLOB SOURCES "src/dsp/*.c")
-file(GLOB ${SOURCES} "src/util/*.c")
+file(GLOB SOURCES "src/*.c")
 
 add_library(libfvb SHARED
   ${SOURCES}
 )
+
+target_include_directories(libfvb PRIVATE "include/")
 
 set_target_properties(libfvb PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(libfvb PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})
