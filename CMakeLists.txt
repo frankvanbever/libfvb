@@ -17,6 +17,10 @@ add_library(libfvb SHARED
 )
 
 target_include_directories(libfvb PRIVATE "include/")
+target_link_libraries(libfvb m)
+
+add_subdirectory(test)
+
 
 set_target_properties(libfvb PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(libfvb PROPERTIES SOVERSION ${PROJECT_VERSION_MAJOR})

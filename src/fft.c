@@ -3,13 +3,18 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 void dft(complex double *x, complex double *X, size_t len)
 {
 	int N = len;
+	if (N == 0)
+		return;
 	for (int k = 0; k < len; k++) {
+		X[k] = 0.0f;
 		for (int n = 0; n < len; n++) {
-			X[k] += x[n] * cexp(-1 * ((I * 2 * M_PI) / N) * k * n);
+			long double exponent = (-2.0L * M_PI * k * n) / N;
+			X[k] += x[n] * cexp(I * exponent);
 		}
 	}
 }
