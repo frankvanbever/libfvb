@@ -4,7 +4,6 @@
 #include <stdio.h>
 
 #include "fft.h"
-#include "dsp_util.h"
 
 #define NUM_SAMPLES 8
 
@@ -48,14 +47,43 @@ START_TEST(test_dft)
 
 	fill_complex_testdata(x, num_samples);
 
-	print_complex_arr(x, num_samples);
-	printf("-----\n");
-
 	dft(x, X, num_samples);
 
-	print_complex_arr(X, num_samples);
-
 	for (int i = 0; i < NUM_SAMPLES; i++) {
+		ck_assert(compare_complex_double(dft_results[i], X[i], 0.01));
+	}
+}
+
+START_TEST(test_fft)
+{
+	const int num_samples = NUM_SAMPLES;
+	double complex x[num_samples];
+	double complex *X = NULL;
+
+	fill_complex_testdata(x, num_samples);
+
+	int ret = fft(x, &X, num_samples);
+	ck_assert_int_eq(ret, 0);
+
+	for (int i = 0; i < num_samples; i++) {
+		ck_assert(compare_complex_double(dft_results[i], X[i], 0.01));
+	}
+
+	free(X);
+}
+
+START_TEST(test_fft_iter)
+{
+	const int num_samples = NUM_SAMPLES;
+	double complex x[num_samples];
+	double complex X[num_samples];
+
+	fill_complex_testdata(x, num_samples);
+
+	int ret = iterative_fft(x, X, num_samples);
+	ck_assert_int_eq(ret, 0);
+
+	for (int i = 0; i < num_samples; i++) {
 		ck_assert(compare_complex_double(dft_results[i], X[i], 0.01));
 	}
 }
@@ -63,14 +91,25 @@ START_TEST(test_dft)
 Suite *dsp_suite(void)
 {
 	Suite *s;
+
 	TCase *dft;
+	TCase *fft;
+	TCase *fft_iter;
 
 	s = suite_create("DSP Tests");
 
 	dft = tcase_create("DFT");
 	tcase_add_test(dft, test_dft);
-
 	suite_add_tcase(s, dft);
+
+	fft = tcase_create("FFT");
+	tcase_add_test(fft, test_fft);
+	suite_add_tcase(s, fft);
+
+	fft_iter = tcase_create("Iterative FFT");
+	tcase_add_test(fft_iter, test_fft_iter);
+	suite_add_tcase(s, fft_iter);
+
 	return s;
 }
 
