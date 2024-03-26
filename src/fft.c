@@ -65,7 +65,7 @@ static int get_factor(int N, complex double **factor)
 	return 0;
 }
 
-int fft(complex double *x, size_t len, complex double **X)
+int fft(complex double *x, complex double **X, size_t len)
 {
 	int ret = -1;
 	complex double *x_even = NULL;
@@ -92,11 +92,11 @@ int fft(complex double *x, size_t len, complex double **X)
 			goto cleanup;
 		}
 
-		if (fft(x_even, len / 2, &X_even)) {
+		if (fft(x_even, &X_even, len / 2)) {
 			goto cleanup;
 		}
 
-		if (fft(x_odd, len / 2, &X_odd)) {
+		if (fft(x_odd, &X_odd, len / 2)) {
 			goto cleanup;
 		}
 
